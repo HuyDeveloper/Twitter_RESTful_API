@@ -10,7 +10,9 @@ import {
   veridyForgotPasswordController,
   resetPasswordController,
   getMeController,
-  updateMeController
+  updateMeController,
+  getProfileController,
+  followController
 } from '~/controllers/users.controllers'
 import {
   accessTokenValidator,
@@ -22,7 +24,8 @@ import {
   verifyForgotPasswordTokenValidator,
   resetPasswordValidator,
   verifiedUserValidator,
-  updateMeValidator
+  updateMeValidator,
+  followValidator
 } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from './../utils/handlers'
 import { filterMiddleWare } from "~/middlewares/common.middleware"
@@ -59,5 +62,13 @@ router.patch(
     'cover_photo'
   ]),
   wrapRequestHandler(updateMeController)
+)
+router.get('/:username', wrapRequestHandler(getProfileController))
+router.post(
+  '/follow',
+  accessTokenValidator,
+  followValidator,
+  verifiedUserValidator,
+  wrapRequestHandler(followController)
 )
 export default router

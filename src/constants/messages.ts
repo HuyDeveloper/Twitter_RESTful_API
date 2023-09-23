@@ -73,4 +73,5 @@ export const USERS_MESSAGES = {
   AVATAR_LENGTH_MUST_BE_FROM_1_TO_200: 'Avatar length must be from 1 to 200',
   COVER_PHOTO_MUST_BE_STRING: 'Cover photo must be a string',
   COVER_PHOTO_LENGTH_MUST_BE_FROM_1_TO_200: 'Cover photo length must be from 1 to 200',
+  FOLLOW_ALREADY: 'Follow already',
 } as const

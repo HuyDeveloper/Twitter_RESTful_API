@@ -32,3 +32,7 @@ export interface TokenPayload extends JwtPayload {
 export interface logoutReqBody {
   refresh_token: string
 }
+
+export interface FollowReqBody {
+  followed_user_id: string
+}

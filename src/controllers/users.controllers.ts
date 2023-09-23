@@ -3,12 +3,13 @@ import User from '~/models/schemas/User.schema'
 import databaseService from '~/services/database.services'
 import userService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { RegisterReqBody, TokenPayload, UpdateMeReqBody, logoutReqBody } from '~/models/requests/Users.requests'
+import { FollowReqBody, RegisterReqBody, TokenPayload, UpdateMeReqBody, logoutReqBody } from '~/models/requests/Users.requests'
 import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { pick, result } from 'lodash'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { UserVerifyStatus } from '~/constants/enum'
+import { PassThrough } from 'stream'
 export const loginController = async (req: Request, res: Response) => {
   const user = req.user as User
   const user_id = user._id as ObjectId
@@ -125,6 +126,23 @@ export const updateMeController = async (
   const user = await userService.updateMe(user_id, body)
   return res.json({
     message: USERS_MESSAGES.UPDATE_ME_SUCCESS,
+    result: user
+  })
+}
+
+export const getProfileController = async (req: Request<{ username: string }>, res: Response) => {
+  const { username } = req.params
+  const user = await userService.getProfile(username)
+  return res.json({
+    result: user,
+    message: USERS_MESSAGES.GET_PROFILE_SUCCESS
+  })
+}
+export const followController = async (req: Request<ParamsDictionary, any, FollowReqBody>, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload //user cua ban than
+  const { followed_user_id } = req.body // user cua nguoi duoc follow
+  const user = await userService.follow(user_id, followed_user_id)
+  return res.json({
     result: user
   })
 }
