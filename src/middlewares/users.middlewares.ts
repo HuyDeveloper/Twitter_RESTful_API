@@ -1,4 +1,4 @@
-import { ParamSchema, check, checkSchema } from 'express-validator'
+import { ParamSchema, check, checkExact, checkSchema } from 'express-validator'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { capitalize } from 'lodash'
 import { ObjectId } from 'mongodb'
@@ -136,6 +136,26 @@ const dataOfBirthSchema: ParamSchema = {
       strictSeparator: true
     },
     errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_MUST_BE_ISO8601
+  }
+}
+
+const user_idSchema: ParamSchema = {
+  custom: {
+    options: async (value, { req }) => {
+      if (!ObjectId.isValid(value)) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.INVALID_USER_ID,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+      const user = await databaseService.users.findOne({ _id: new ObjectId(value) })
+      if (user === null) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.USER_NOT_FOUND,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+    }
   }
 }
 export const loginValidator = validate(
@@ -489,27 +509,17 @@ export const updateMeValidator = validate(
 export const followValidator = validate(
   checkSchema(
     {
-      followed_user_id: {
-        custom: {
-          options: async (value, { req }) => {
-            if (!ObjectId.isValid(value)) {
-              throw new ErrorWithStatus({
-                message: USERS_MESSAGES.INVALID_USER_ID,
-                status: HTTP_STATUS.NOT_FOUND
-              })
-            }
-            console.log(value);
-            const user = await databaseService.users.findOne({ _id: new ObjectId(value) })
-            if (user === null) {
-              throw new ErrorWithStatus({
-                message: USERS_MESSAGES.USER_NOT_FOUND,
-                status: HTTP_STATUS.NOT_FOUND
-              })
-            }
-          }
-        }
-      }
+      followed_user_id: user_idSchema
     },
     ['body']
+  )
+)
+
+export const unfollowValidator = validate(
+  checkSchema(
+    {
+      user_id: user_idSchema
+    },
+    ['params']
   )
 )

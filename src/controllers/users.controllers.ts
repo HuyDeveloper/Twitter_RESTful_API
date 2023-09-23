@@ -3,7 +3,7 @@ import User from '~/models/schemas/User.schema'
 import databaseService from '~/services/database.services'
 import userService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { FollowReqBody, RegisterReqBody, TokenPayload, UpdateMeReqBody, logoutReqBody } from '~/models/requests/Users.requests'
+import { FollowReqBody, RegisterReqBody, TokenPayload, UnfollowReqParams, UpdateMeReqBody, logoutReqBody } from '~/models/requests/Users.requests'
 import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { pick, result } from 'lodash'
@@ -144,5 +144,14 @@ export const followController = async (req: Request<ParamsDictionary, any, Follo
   const user = await userService.follow(user_id, followed_user_id)
   return res.json({
     result: user
+  })
+}
+
+export const unfollowController = async (req: Request<UnfollowReqParams>, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { user_id: followed_user_id } = req.params
+  const result = await userService.unfollow(user_id, followed_user_id)
+  return res.json({
+    result
   })
 }
