@@ -61,5 +61,16 @@ export const USERS_MESSAGES = {
   CHANGE_PASSWORD_SUCCESS: 'Change password success',
   GMAIL_NOT_VERIFIED: 'Gmail not verified',
   UPLOAD_SUCCESS: 'Upload success',
-  REFRESH_TOKEN_SUCCESS: 'Refresh token success'
+  REFRESH_TOKEN_SUCCESS: 'Refresh token success',
+  BIO_MUST_BE_A_STRING: 'Bio must be a string',
+  BIO_LENGTH_MUST_BE_FROM_1_TO_200: 'Bio length must be from 1 to 200',
+  LOCATION_MUST_BE_A_STRING: 'Location must be a string',
+  LOCATION_LENGTH_MUST_BE_FROM_1_TO_200: 'Location length must be from 1 to 200',
+  WEBSITE_MUST_BE_A_STRING: 'Website must be a string',
+  WEBSITE_LENGTH_MUST_BE_FROM_1_TO_200: 'Website length must be from 1 to 200',
+  USERNAME_LENGTH_MUST_BE_FROM_1_TO_50: 'Username length must be from 1 to 50',
+  AVATAR_MUST_BE_STRING: 'Avatar must be a string',
+  AVATAR_LENGTH_MUST_BE_FROM_1_TO_200: 'Avatar length must be from 1 to 200',
+  COVER_PHOTO_MUST_BE_STRING: 'Cover photo must be a string',
+  COVER_PHOTO_LENGTH_MUST_BE_FROM_1_TO_200: 'Cover photo length must be from 1 to 200',
 } as const

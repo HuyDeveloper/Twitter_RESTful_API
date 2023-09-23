@@ -12,6 +12,17 @@ export interface RegisterReqBody {
   date_of_birth: string
 }
 
+export interface UpdateMeReqBody{
+  name?: string
+  date_of_birth?: Date
+  bio?: string
+  avatar?: string
+  location?: string
+  website?: string
+  username?: string
+  cover_photo?: string
+}
+
 export interface TokenPayload extends JwtPayload {
   user_id: string
   token_type: TokenType

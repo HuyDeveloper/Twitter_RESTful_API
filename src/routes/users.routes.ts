@@ -8,7 +8,9 @@ import {
   resendEmailVerifyTokenController,
   forgotPasswordController,
   veridyForgotPasswordController,
-  resetPasswordController
+  resetPasswordController,
+  getMeController,
+  updateMeController
 } from '~/controllers/users.controllers'
 import {
   accessTokenValidator,
@@ -18,9 +20,13 @@ import {
   registerValidator,
   forgotPasswordValidator,
   verifyForgotPasswordTokenValidator,
-  resetPasswordValidator
+  resetPasswordValidator,
+  verifiedUserValidator,
+  updateMeValidator
 } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from './../utils/handlers'
+import { filterMiddleWare } from "~/middlewares/common.middleware"
+import { UpdateMeReqBody } from "~/models/requests/Users.requests"
 const router = express.Router()
 
 router.post('/login', loginValidator, wrapRequestHandler(loginController))
@@ -36,4 +42,22 @@ router.post(
   wrapRequestHandler(veridyForgotPasswordController)
 )
 router.post('/reset-password', resetPasswordValidator, wrapRequestHandler(resetPasswordController))
+router.get('/me', accessTokenValidator, wrapRequestHandler(getMeController))
+router.patch(
+  '/me',
+  accessTokenValidator,
+  verifiedUserValidator,
+  updateMeValidator,
+  filterMiddleWare<UpdateMeReqBody>([
+    'name',
+    'date_of_birth',
+    'bio',
+    'location',
+    'website',
+    'username',
+    'avatar',
+    'cover_photo'
+  ]),
+  wrapRequestHandler(updateMeController)
+)
 export default router
