@@ -13,7 +13,8 @@ import {
   updateMeController,
   getProfileController,
   followController,
-  unfollowController
+  unfollowController,
+  changePasswordController
 } from '~/controllers/users.controllers'
 import {
   accessTokenValidator,
@@ -27,7 +28,8 @@ import {
   verifiedUserValidator,
   updateMeValidator,
   followValidator,
-  unfollowValidator
+  unfollowValidator,
+  changePasswordValidator
 } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from './../utils/handlers'
 import { filterMiddleWare } from "~/middlewares/common.middleware"
@@ -74,4 +76,11 @@ router.post(
   wrapRequestHandler(followController)
 )
 router.delete('/follow/:user_id', accessTokenValidator, unfollowValidator, wrapRequestHandler(unfollowController))
+router.put(
+  '/change-password',
+  accessTokenValidator,
+  verifiedUserValidator,
+  changePasswordValidator,
+  wrapRequestHandler(changePasswordController)
+)
 export default router

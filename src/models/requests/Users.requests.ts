@@ -40,3 +40,9 @@ export interface FollowReqBody {
 export interface UnfollowReqParams {
   user_id: string
 }
+
+export interface ChangePasswordBody {
+  old_password: string
+  password: string
+  confirm_password: string
+}

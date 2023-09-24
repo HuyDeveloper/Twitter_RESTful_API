@@ -3,7 +3,15 @@ import User from '~/models/schemas/User.schema'
 import databaseService from '~/services/database.services'
 import userService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { FollowReqBody, RegisterReqBody, TokenPayload, UnfollowReqParams, UpdateMeReqBody, logoutReqBody } from '~/models/requests/Users.requests'
+import {
+  ChangePasswordBody,
+  FollowReqBody,
+  RegisterReqBody,
+  TokenPayload,
+  UnfollowReqParams,
+  UpdateMeReqBody,
+  logoutReqBody
+} from '~/models/requests/Users.requests'
 import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { pick, result } from 'lodash'
@@ -103,7 +111,7 @@ export const veridyForgotPasswordController = async (req: Request, res: Response
   })
 }
 
-export const resetPasswordController =async (req: Request, res: Response) => {
+export const resetPasswordController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_forgot_password_token as TokenPayload
   const { password } = req.body
   const result = await userService.resetPassword(user_id, password)
@@ -154,4 +162,14 @@ export const unfollowController = async (req: Request<UnfollowReqParams>, res: R
   return res.json({
     result
   })
+}
+
+export const changePasswordController = async (
+  req: Request<ParamsDictionary, any, ChangePasswordBody>,
+  res: Response
+) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { password } = req.body
+  const result = await userService.changePassword(user_id, password)
+  return res.json({ result })
 }

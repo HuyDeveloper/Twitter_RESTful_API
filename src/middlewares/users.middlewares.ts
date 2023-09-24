@@ -11,9 +11,9 @@ import userService from '~/services/users.services'
 import { hashPassword } from '~/utils/crypto'
 import { verifyToken } from '~/utils/jwt'
 import { validate } from '~/utils/validation'
-import e, { NextFunction, Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { UserVerifyStatus } from '~/constants/enum'
-
+import { REGEX_USERNAME } from '~/constants/regex'
 const passwordSchema: ParamSchema = {
   isString: {
     errorMessage: USERS_MESSAGES.PASSWORD_MUST_BE_A_STRING
@@ -465,12 +465,16 @@ export const updateMeValidator = validate(
           errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_STRING
         },
         trim: true,
-        isLength: {
-          options: {
-            min: 1,
-            max: 50
-          },
-          errorMessage: USERS_MESSAGES.USERNAME_LENGTH_MUST_BE_FROM_1_TO_50
+        custom: {
+          options: async (value, { req }) => {
+            if (!REGEX_USERNAME.test(value)) {
+              throw new Error(USERS_MESSAGES.USERNAME_IS_INVALID)
+            }
+            const user = await databaseService.users.findOne({ username: value })
+            if (user) {
+              throw new Error(USERS_MESSAGES.USERNAME_EXISTED)
+            }
+          }
         }
       },
       avatar: {
@@ -521,5 +525,36 @@ export const unfollowValidator = validate(
       user_id: user_idSchema
     },
     ['params']
+  )
+)
+
+export const changePasswordValidator = validate(
+  checkSchema(
+    {
+      old_password: {
+        ...passwordSchema,
+        custom: {
+          options: async (value, { req }) => {
+            const { user_id } = req.decoded_authorization as TokenPayload
+            const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) })
+            if (!user) {
+              throw new ErrorWithStatus({
+                message: USERS_MESSAGES.USER_NOT_FOUND,
+                status: HTTP_STATUS.NOT_FOUND
+              })
+            }
+            if (user.password !== hashPassword(value)) {
+              throw new ErrorWithStatus({
+                message: USERS_MESSAGES.OLD_PASSWORD_NOT_MATCH,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
+          }
+        }
+      },
+      password: passwordSchema,
+      confirm_password: confirmPasswordSchema,
+    },
+    ['body']
   )
 )

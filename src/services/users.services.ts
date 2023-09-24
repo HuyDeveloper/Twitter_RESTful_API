@@ -149,6 +149,9 @@ class UserService {
       )
     ])
     const [access_token, refresh_token] = token
+    databaseService.refreshToken.insertOne(
+      new RefreshToken({ user_id: new ObjectId(user_id), created_at: new Date(), token: refresh_token })
+    )
     return {
       access_token,
       refresh_token
@@ -268,6 +271,15 @@ class UserService {
     return {
       result,
       message: USERS_MESSAGES.UNFOLLOW_SUCCESS
+    }
+  }
+  async changePassword(user_id: string, password: string){
+    const result = await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) },
+      { $set: { password: hashPassword(password), updated_at: new Date() } }
+    )
+    return {
+      message: USERS_MESSAGES.CHANGE_PASSWORD_SUCCESS
     }
   }
 }
