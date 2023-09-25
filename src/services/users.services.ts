@@ -11,7 +11,7 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { CLIENT_RENEG_LIMIT } from 'tls'
 import { ErrorWithStatus } from '~/models/Errors'
-
+import axios from 'axios'
 class UserService {
   private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
     return signToken({
@@ -203,7 +203,7 @@ class UserService {
     )
     return user
   }
-  async updateMe(user_id: string, payload: UpdateMeReqBody){
+  async updateMe(user_id: string, payload: UpdateMeReqBody) {
     const user = await databaseService.users.findOneAndUpdate(
       { _id: new ObjectId(user_id) },
       { $set: { ...payload, updated_at: new Date() } },
@@ -228,7 +228,7 @@ class UserService {
           forgot_password_token: 0,
           verify: 0,
           created_at: 0,
-          updated_at: 0,
+          updated_at: 0
         }
       }
     )
@@ -273,13 +273,83 @@ class UserService {
       message: USERS_MESSAGES.UNFOLLOW_SUCCESS
     }
   }
-  async changePassword(user_id: string, password: string){
+  async changePassword(user_id: string, password: string) {
     const result = await databaseService.users.updateOne(
       { _id: new ObjectId(user_id) },
       { $set: { password: hashPassword(password), updated_at: new Date() } }
     )
     return {
       message: USERS_MESSAGES.CHANGE_PASSWORD_SUCCESS
+    }
+  }
+
+  private async getOauthGoogleToken(code: string) {
+    const body = {
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      grant_type: 'authorization_code'
+    }
+    const { data } = await axios.post('https://oauth2.googleapis.com/token', body, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    return data
+  }
+
+  private async getGoogleUserInfo(access_token: string, id_token: string) {
+    const { data } = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo', {
+      params: {
+        access_token,
+        alt: 'json'
+      },
+      headers: {
+        Authorization: `Bearer ${id_token}`
+      }
+    })
+    return data
+  }
+  async oauth(code: string) {
+    const { id_token, access_token } = await this.getOauthGoogleToken(code)
+    const userInfo = await this.getGoogleUserInfo(access_token, id_token)
+    console.log(userInfo)
+    if (!userInfo.verified_email) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.GMAIL_NOT_VERIFIED,
+        status: HTTP_STATUS.BAD_REQUEST
+      })
+    }
+    const user = await databaseService.users.findOne({ email: userInfo.email })
+    if (user) {
+      const [access_token, refresh_token] = await this.signAccessAndRefreshToken({
+        user_id: user._id.toString(),
+        verify: user.verify
+      })
+      databaseService.refreshToken.insertOne(
+        new RefreshToken({ user_id: new ObjectId(user._id), created_at: new Date(), token: refresh_token })
+      )
+      return {
+        access_token,
+        refresh_token,
+        new_user: 0,
+        verify: user.verify
+      }
+    } else {
+      const password = Math.random().toString(36).substring(2, 7)
+      const data = await this.register({
+        name: userInfo.name,
+        email: userInfo.email,
+        date_of_birth: new Date().toISOString(),
+        password: password,
+        confirm_password: password
+      })
+      return {
+        ...data,
+        new_user: 1,
+        verify: UserVerifyStatus.Unverified
+      }
     }
   }
 }

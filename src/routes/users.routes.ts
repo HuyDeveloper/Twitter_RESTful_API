@@ -14,7 +14,8 @@ import {
   getProfileController,
   followController,
   unfollowController,
-  changePasswordController
+  changePasswordController,
+  oauthController
 } from '~/controllers/users.controllers'
 import {
   accessTokenValidator,
@@ -34,6 +35,7 @@ import {
 import { wrapRequestHandler } from './../utils/handlers'
 import { filterMiddleWare } from "~/middlewares/common.middleware"
 import { UpdateMeReqBody } from "~/models/requests/Users.requests"
+import { waitForDebugger } from "inspector"
 const router = express.Router()
 
 router.post('/login', loginValidator, wrapRequestHandler(loginController))
@@ -83,4 +85,5 @@ router.put(
   changePasswordValidator,
   wrapRequestHandler(changePasswordController)
 )
+router.get('/oauth/google', wrapRequestHandler(oauthController))
 export default router

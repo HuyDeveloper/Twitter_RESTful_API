@@ -18,6 +18,8 @@ import { pick, result } from 'lodash'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { UserVerifyStatus } from '~/constants/enum'
 import { PassThrough } from 'stream'
+import { config } from 'dotenv'
+config()
 export const loginController = async (req: Request, res: Response) => {
   const user = req.user as User
   const user_id = user._id as ObjectId
@@ -172,4 +174,10 @@ export const changePasswordController = async (
   const { password } = req.body
   const result = await userService.changePassword(user_id, password)
   return res.json({ result })
+}
+export const oauthController = async (req: Request, res: Response) => {
+  const { code } = req.query
+  const result = await userService.oauth(code as string)
+  const urlRedirect = `${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.new_user}&user_id=${result.new_user}&verify=${result.verify}`
+  return res.redirect(urlRedirect)
 }
