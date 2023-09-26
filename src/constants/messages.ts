@@ -75,5 +75,5 @@ export const USERS_MESSAGES = {
   COVER_PHOTO_LENGTH_MUST_BE_FROM_1_TO_200: 'Cover photo length must be from 1 to 200',
   FOLLOW_ALREADY: 'Follow already',
   USERNAME_IS_INVALID:
-    'Username is invalid, must be 4-15 characters long and contain only letters, numbers, underscores, not only numbers'
+    'Username is invalid, must be 4-15 characters long and contain only letters, numbers, underscores, not only numbers',
 } as const
