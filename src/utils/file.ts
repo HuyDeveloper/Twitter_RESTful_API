@@ -3,24 +3,26 @@ import fs from 'fs'
 import path from 'path'
 import formidable, { File } from 'formidable'
 import { flatMap } from 'lodash'
-import { UPLOAD_TEMP_DIR } from '~/constants/dir'
+import { UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_DIR, UPLOAD_VIDEO_TEMP_DIR } from '~/constants/dir'
 export const initFolder = () => {
-  if (fs.existsSync(UPLOAD_TEMP_DIR)) {
-    return
-  }
-  fs.mkdirSync(UPLOAD_TEMP_DIR, {
-    recursive: true
+  ;[UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_TEMP_DIR].forEach((dir) => {
+    if (fs.existsSync(dir)) {
+      return
+    }
+    fs.mkdirSync(dir, {
+      recursive: true
+    })
   })
 }
 
 export const handleUploadImage = async (req: Request) => {
   const form = formidable({
-    uploadDir: UPLOAD_TEMP_DIR,
-    maxFiles: 1,
+    uploadDir: UPLOAD_IMAGE_TEMP_DIR,
+    maxFiles: 4,
     keepExtensions: true,
     maxFields: 300 * 1024,
+    maxFieldsSize: 300 * 1024 * 4,
     filter: ({ originalFilename, name, mimetype }) => {
-      console.log({ name, mimetype, originalFilename })
       const valid = name === 'image' && Boolean(mimetype?.includes('image/'))
       if (!valid) {
         form.emit('error' as any, new Error('File is not valid') as any)
@@ -29,7 +31,7 @@ export const handleUploadImage = async (req: Request) => {
       return valid
     }
   })
-  return new Promise<File>((resolve, reject) => {
+  return new Promise<File[]>((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
       if (err) {
         return reject(err)
@@ -38,7 +40,38 @@ export const handleUploadImage = async (req: Request) => {
       if (!Boolean(files.image)) {
         return reject(new Error('File is empty'))
       }
-      resolve((files.image as File[])[0])
+      resolve(files.image as File[])
+    })
+  })
+}
+
+export const handleUploadVideo = async (req: Request) => {
+  const form = formidable({
+    uploadDir: UPLOAD_VIDEO_DIR,
+    maxFiles: 4,
+    keepExtensions: true,
+    maxFields: 100 * 1024 * 1024,
+    maxFieldsSize: 300 * 1024 * 4,
+    filter: ({ originalFilename, name, mimetype }) => {
+      return true
+      const valid = name === 'video' && Boolean(mimetype?.includes('mp4') || mimetype?.includes('quicktime'))
+      if (!valid) {
+        form.emit('error' as any, new Error('File is not valid') as any)
+      }
+
+      return valid
+    }
+  })
+  return new Promise<File[]>((resolve, reject) => {
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        return reject(err)
+      }
+      // eslint-disable-next-line no-extra-boolean-cast
+      if (!Boolean(files.video)) {
+        return reject(new Error('File is empty'))
+      }
+      resolve(files.video as File[])
     })
   })
 }
