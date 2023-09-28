@@ -7,5 +7,6 @@ declare module 'express' {
     decoded_refresh_token?: TokenPayload
     decoded_email_verify_token?: TokenPayload
     decoded_forgot_password_token?: TokenPayload
+    videoPath?: string
   }
 }

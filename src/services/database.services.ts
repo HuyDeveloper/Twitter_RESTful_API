@@ -3,6 +3,7 @@ import User from '~/models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import Follower from '~/models/schemas/Follow.schema'
 import dotenv from 'dotenv'
+import VideoStatus from '~/models/schemas/VideoStatus.schema'
 dotenv.config()
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.atzgrz8.mongodb.net/?retryWrites=true&w=majority`
 
@@ -33,6 +34,9 @@ class DatabaseService {
   }
   get follow(): Collection<Follower> {
     return this.db.collection(process.env.DB_FOLLOWERS_COLLECTION as string)
+  }
+  get videoStatus(): Collection<VideoStatus> {
+    return this.db.collection(process.env.DB_VIDEOSTATUS_COLLECTION as string)
   }
 }
 

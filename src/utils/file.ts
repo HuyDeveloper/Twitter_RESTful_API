@@ -4,6 +4,7 @@ import path from 'path'
 import formidable, { File } from 'formidable'
 import { flatMap } from 'lodash'
 import { UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_DIR, UPLOAD_VIDEO_TEMP_DIR } from '~/constants/dir'
+
 export const initFolder = () => {
   ;[UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_TEMP_DIR].forEach((dir) => {
     if (fs.existsSync(dir)) {
@@ -46,8 +47,12 @@ export const handleUploadImage = async (req: Request) => {
 }
 
 export const handleUploadVideo = async (req: Request) => {
+  const nanoId = (await import('nanoid')).nanoid
+  const idName = nanoId()
+  const folder_path = path.resolve(UPLOAD_VIDEO_DIR, idName)
+  fs.mkdirSync(folder_path)
   const form = formidable({
-    uploadDir: UPLOAD_VIDEO_DIR,
+    uploadDir: path.resolve(UPLOAD_VIDEO_DIR, idName),
     maxFiles: 4,
     keepExtensions: true,
     maxFields: 100 * 1024 * 1024,
@@ -58,8 +63,10 @@ export const handleUploadVideo = async (req: Request) => {
       if (!valid) {
         form.emit('error' as any, new Error('File is not valid') as any)
       }
-
       return valid
+    },
+    filename: function (name, ext) {
+      return idName + ext
     }
   })
   return new Promise<File[]>((resolve, reject) => {
