@@ -77,3 +77,28 @@ export const USERS_MESSAGES = {
   USERNAME_IS_INVALID:
     'Username is invalid, must be 4-15 characters long and contain only letters, numbers, underscores, not only numbers',
 } as const
+
+
+export const TWEETS_MESSAGES = {
+  TWEET_TYPE_IS_INVALID: 'Tweet type is invalid',
+  INVALID_AUDIENCE: 'Invalid audience',
+  PARENT_ID_MUST_BE_A_VALID_TWEET_ID: 'Parent id must be a valid tweet id',
+  PARENT_ID_MUST_BE_NULL: 'Parent id must be null',
+  CONTENT_IS_REQUIRED: 'Content is required',
+  CONTENT_MUST_BE_EMPTY_STRING: 'Content must be empty string',
+  HASHTAGS_MUST_BE_ARRAY_STRING: 'Hashtags must be array string',
+  MENTIONS_MUST_BE_AN_ARRAY_OF_USER_ID: 'Mentions must be an array of user id',
+  MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT: 'Medias must be an array of media object',
+  TWEET_ID_IS_INVALID: 'Tweet id is invalid',
+  TWEET_ID_NOT_FOUND: 'Tweet id not found',
+} as const 
+
+export const BOOKMARKS_MESSAGES = {
+  BOOKMARK_SUCCESS: 'Bookmark tweet successfully',
+  UN_BOOKMARK_SUCCESS: 'Unbookmark tweet successfully',
+} as const
+
+export const LIKES_MESSAGES = {
+  LIKE_SUCCESS: 'Like tweet successfully',
+  UN_LIKE_SUCCESS: 'Unlike tweet successfully',
+} as const

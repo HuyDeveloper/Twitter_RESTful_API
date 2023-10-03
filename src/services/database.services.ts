@@ -4,6 +4,10 @@ import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import Follower from '~/models/schemas/Follow.schema'
 import dotenv from 'dotenv'
 import VideoStatus from '~/models/schemas/VideoStatus.schema'
+import Tweet from '~/models/schemas/Tweet.schema'
+import Hashtag from '~/models/schemas/Hashtag.schema'
+import Bookmark from '~/models/schemas/Bookmark.schema'
+import Like from '~/models/schemas/Like.schema'
 dotenv.config()
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.atzgrz8.mongodb.net/?retryWrites=true&w=majority`
 
@@ -29,6 +33,9 @@ class DatabaseService {
   get users(): Collection<User> {
     return this.db.collection(process.env.DB_USERS_COLLECTION as string)
   }
+  get tweets(): Collection<Tweet> {
+    return this.db.collection(process.env.DB_TWEETS_COLLECTION as string)
+  }
   get refreshToken(): Collection<RefreshToken> {
     return this.db.collection(process.env.DB_REFRESHTOKEN_COLLECTION as string)
   }
@@ -37,6 +44,15 @@ class DatabaseService {
   }
   get videoStatus(): Collection<VideoStatus> {
     return this.db.collection(process.env.DB_VIDEOSTATUS_COLLECTION as string)
+  }
+  get hashtags(): Collection<Hashtag> {
+    return this.db.collection(process.env.DB_HASHTAGS_COLLECTION as string)
+  }
+  get bookmarks(): Collection<Bookmark> {
+    return this.db.collection(process.env.DB_BOOKMARKS_COLLECTION as string)
+  }
+  get likes(): Collection<Like> {
+    return this.db.collection(process.env.DB_LIKES_COLLECTION as string)
   }
 }
 
