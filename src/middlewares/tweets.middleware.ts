@@ -246,7 +246,7 @@ export const audienceValidator = async (req: Request, res: Response, next: NextF
   if (tweet.audience === TweetAudience.TwitterCircle) {
     // Kiểm tra người xem có đăng nhập không
     if (!req.decoded_authorization) {
-      console.log(1);
+      console.log(1)
       throw new ErrorWithStatus({
         status: HTTP_STATUS.UNAUTHORIZED,
         message: USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED
@@ -272,3 +272,40 @@ export const audienceValidator = async (req: Request, res: Response, next: NextF
   }
   next()
 }
+
+export const getTweetChildrenValidator = validate(
+  checkSchema(
+    {
+      tweet_type: {
+        isIn: {
+          options: [numberEnumToArray(TweetType)],
+          errorMessage: TWEETS_MESSAGES.TWEET_TYPE_IS_INVALID
+        }
+      },
+      limit: {
+        isNumeric: true,
+        custom: {
+          options: (value, { req }) => {
+            const num = Number(value)
+            if (num < 1 || num > 100) {
+              throw new Error(TWEETS_MESSAGES.LIMIT_MUST_BE_A_NUMBER_BETWEEN_1_AND_100)
+            }
+            return true
+          }
+        }
+      },
+      page: {
+        isNumeric: true,
+        custom:{
+          options: (value, { req }) => {
+            if (Number(value) < 1) {
+              throw new Error(TWEETS_MESSAGES.PAGE_MUST_BE_A_NUMBER_GREATER_THAN_0)
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['query']
+  )
+)

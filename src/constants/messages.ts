@@ -92,6 +92,8 @@ export const TWEETS_MESSAGES = {
   TWEET_ID_IS_INVALID: 'Tweet id is invalid',
   TWEET_ID_NOT_FOUND: 'Tweet id not found',
   TWEET_ID_NOT_PUBLIC: 'Tweet id is not public',
+  LIMIT_MUST_BE_A_NUMBER_BETWEEN_1_AND_100: 'Limit must be a number between 1 and 100',
+  PAGE_MUST_BE_A_NUMBER_GREATER_THAN_0: 'Page must be a number greater than 0',
 } as const 
 
 export const BOOKMARKS_MESSAGES = {
