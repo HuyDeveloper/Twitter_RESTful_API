@@ -281,7 +281,15 @@ export const getTweetChildrenValidator = validate(
           options: [numberEnumToArray(TweetType)],
           errorMessage: TWEETS_MESSAGES.TWEET_TYPE_IS_INVALID
         }
-      },
+      }
+    },
+    ['query']
+  )
+)
+
+export const paginationValidator = validate(
+  checkSchema(
+    {
       limit: {
         isNumeric: true,
         custom: {
@@ -296,7 +304,7 @@ export const getTweetChildrenValidator = validate(
       },
       page: {
         isNumeric: true,
-        custom:{
+        custom: {
           options: (value, { req }) => {
             if (Number(value) < 1) {
               throw new Error(TWEETS_MESSAGES.PAGE_MUST_BE_A_NUMBER_GREATER_THAN_0)

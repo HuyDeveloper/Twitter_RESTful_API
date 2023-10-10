@@ -10,3 +10,8 @@ export interface TweetReqBody {
   mentions: string[]
   medias: Media[]
 }
+
+export interface Pagination {
+  limit: string
+  page: string
+}
