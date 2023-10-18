@@ -5,6 +5,7 @@ import staticRouter from '~/routes/static.routes'
 import tweetRouter from '~/routes/tweet.routes'
 import bookmarkRouter from '~/routes/bookmarks.routes'
 import likeRouter from '~/routes/likes.routes'
+import searchRouter from '~/routes/search.routes'
 import databaseService from '~/services/database.services'
 import { defaultErrorHandler } from './middlewares/errors.middleware'
 import { initFolder } from './utils/file'
@@ -31,6 +32,7 @@ app.use('/static', staticRouter)
 app.use('/tweets', tweetRouter)
 app.use('/bookmarks', bookmarkRouter)
 app.use('/likes', likeRouter)
+app.use('/search', searchRouter)
 app.use(defaultErrorHandler)
 app.use('/static/video', express.static(path.resolve(UPLOAD_VIDEO_DIR)))// tao folder static de luu video static
 app.listen(port, () => {

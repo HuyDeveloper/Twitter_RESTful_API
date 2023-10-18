@@ -105,3 +105,10 @@ export const LIKES_MESSAGES = {
   LIKE_SUCCESS: 'Like tweet successfully',
   UN_LIKE_SUCCESS: 'Unlike tweet successfully',
 } as const
+
+export const SEARCH_MESSAGES = {
+  CONTENT_IS_REQUIRED: 'Content is required',
+  MEDIA_TYPE_IS_REQUIRED: 'Media type is required',
+  MEDIA_TYPE_IS_INVALID: 'Media type is invalid',
+  PEOPLE_FOLLOW_IS_INVALID: 'People follow is invalid',
+}

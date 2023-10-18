@@ -38,7 +38,7 @@ export const getTweetChildrenController = async (req: Request, res: Response, ne
     page: page,
     user_id: user_id
   })
-  res.status(200).json({
+  return res.status(200).json({
     message: 'Get tweet children successfully',
     result: {
       tweets,
