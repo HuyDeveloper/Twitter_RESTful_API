@@ -13,6 +13,7 @@ import { config } from 'dotenv'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import cors from 'cors'
 import path from 'path'
+import '~/utils/s3'
 // import '~/utils/fake'
 config()
 const app = express()

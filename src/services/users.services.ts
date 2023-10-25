@@ -12,6 +12,7 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import { CLIENT_RENEG_LIMIT } from 'tls'
 import { ErrorWithStatus } from '~/models/Errors'
 import axios from 'axios'
+import { sendForgotPasswordEmail, sendVerifyRegisterEmail } from '~/utils/email'
 class UserService {
   private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
     return signToken({
@@ -93,6 +94,7 @@ class UserService {
       new RefreshToken({ user_id: new ObjectId(user_id), created_at: new Date(), token: refresh_token })
     )
     console.log('email verify token: ', email_verify_token)
+    await sendVerifyRegisterEmail(payload.email, email_verify_token)
     return {
       access_token,
       refresh_token
@@ -157,10 +159,10 @@ class UserService {
       refresh_token
     }
   }
-  async resendEmailVerifyToken(user_id: string) {
+  async resendEmailVerifyToken(user_id: string, email: string) {
     const email_verify_token = await this.signEmailVerifyToken({ user_id, verify: UserVerifyStatus.Unverified })
     console.log('email verify token: ', email_verify_token)
-
+    await sendVerifyRegisterEmail(email, email_verify_token)
     await databaseService.users.updateOne(
       { _id: new ObjectId(user_id) },
       { $set: { email_verify_token, updated_at: new Date() } }
@@ -169,13 +171,14 @@ class UserService {
       message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
     }
   }
-  async forgotPassword({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  async forgotPassword({ user_id, verify, email }: { user_id: string; verify: UserVerifyStatus, email: string }) {
     const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
     await databaseService.users.updateOne(
       { _id: new ObjectId(user_id) },
       { $set: { forgot_password_token, updated_at: new Date() } }
     )
     console.log('forgot password token: ', forgot_password_token)
+    await sendForgotPasswordEmail(email, forgot_password_token)
     return {
       message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD
     }
